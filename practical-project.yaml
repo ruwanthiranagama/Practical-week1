@@ -1,0 +1,42 @@
+---
+resources:
+- name: src
+  type: git
+  check_every: 1m
+  source:
+    uri: https://github.com/ruwanthiranagama/docker-stub.git
+    branch: main
+
+#- name: important-image
+#  type: registry-image
+ #   source:
+    #repository: ruwanthiranagama/docker-stub
+    #tag: latest
+   # username: ((docker_user))
+    #assword: ((docker_pass))
+
+jobs:
+- name: build-image-ruwan
+  plan:
+    - get: src
+      trigger: true
+    - task: build
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: concourse/oci-build-task
+        params:
+          DOCKERFILE: src/Dockerfile
+        inputs:
+        - name: src
+        outputs:
+        - name: image
+        run:
+          path: build
+    #- put: important-image
+     # params: 
+       # image: image/image.tar
+        # version: 1.1.0

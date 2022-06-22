@@ -1,0 +1,29 @@
+resources:
+- name: src
+  type: git
+  check_every: 1m
+  source:
+    uri: https://github.com/ruwanthiranagama/docker-stub.git
+    branch: main
+    paths: [config.yaml]
+jobs:
+- name: echo-ru
+  plan:
+    - get: src
+      trigger: true
+    - task: echo
+      privileged: true
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: busybox
+        inputs:
+        - name: src
+        run:
+          path: /bin/sh
+          args:
+            - -exc
+            - |
+              cat src/config.yaml
